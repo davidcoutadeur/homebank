@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<homebank v="0.40000000000000002">
+<properties title="user" car_category="0" auto_nbdays="0"/>
+<account key="1" flags="1" pos="1" type="1" name="my-account" number="" bankname="my-bankname" initial="1000" minimum="0" cheque1="0" cheque2="0"/>
+<cat key="30" parent="0" flags="8" name="food" b0="-200"/>
+<ope date="736000" amount="-10" account="1" dst_account="0" paymode="4" flags="2" payee="0" category="30" wording="sandwich" info="" tags=""/>
+</homebank>
