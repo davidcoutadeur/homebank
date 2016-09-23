@@ -81,9 +81,9 @@ if ( defined($date) and defined($amount) and
     
     # Write new xml
     Budget::writeXML($ref, $fileout);
-  
+
     # Checking if operation is correctly saved
-    my $success = system("grep $ts $fileout | grep -q $wording");
+    my $success = system("grep $ts $fileout | grep -q '".$wording."'");
   
     if( $success == 0 )
     { # operation saved with success

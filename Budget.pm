@@ -43,8 +43,8 @@ sub getCategories {
   foreach my $key ( @$cat ) {
     # don't consider top categories
     if ( $key->{flags} ne "0" ) {
-      my $name = $key->{name};
-      my $k = $key->{key};
+      my $name = Encode::encode_utf8( $key->{name} );
+      my $k = Encode::encode_utf8( $key->{key} );
       $cat{$k} = $name;
     }
   }
@@ -61,10 +61,10 @@ sub getOperations {
   my $ope = $ref->{ope};
 
   foreach my $key ( @$ope ) {
-    my $date = $key->{date};
-    my $amount = $key->{amount};
-    my $category = $cat->{$key->{category}};
-    my $wording = $key->{wording};
+    my $date = Encode::encode_utf8( $key->{date} );
+    my $amount = Encode::encode_utf8( $key->{amount} );
+    my $category = Encode::encode_utf8( $cat->{$key->{category}} );
+    my $wording = Encode::encode_utf8( $key->{wording} );
     
     push @$operations, {date => $date,
                         pdate => timestampToDate($date),
@@ -118,12 +118,12 @@ sub insertOperation {
   my $wo = shift;
 
   my $ope = {
-              'wording' => $wo,
-              'account' => $ac,
-              'date' => $da,
+              'wording' => Encode::decode_utf8( $wo ),
+              'account' => Encode::decode_utf8( $ac ),
+              'date' => Encode::decode_utf8( $da ),
               'dst_account' => '0',
-              'amount' => $am,
-              'category' => $ca
+              'amount' => Encode::decode_utf8( $am ),
+              'category' => Encode::decode_utf8( $ca )
             };
  
   push @{$ref->{ope}}, $ope;
@@ -141,7 +141,7 @@ sub writeXML {
                          XMLDecl => '<?xml version="1.0"?>' );
 
   open(my $fh, '>', $out) or die "Could not open file '$out' $!";
-  print $fh $xml;
+  print $fh Encode::encode_utf8( $xml );
   close $fh;
 }
 
