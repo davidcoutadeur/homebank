@@ -102,13 +102,33 @@
 <div class="form-group">
   <label class="col-md-4 control-label" for="button1id"></label>
   <div class="col-md-4 controlbuttons">
-    <button id="button1id" name="button1id" class="btn btn-success">Valider</button>
-    <button id="button2id" name="button2id" class="btn btn-danger">Annuler</button>
+    <button id="button1id" type="submit" name="button1id" class="btn btn-success">Valider</button>
+    <button id="button2id" type="reset" name="button2id" class="btn btn-danger">Annuler</button>
   </div>
 </div>
 
 </fieldset>
 </form>
+
+<div class="table-responsive">
+<table class="table table-hover">
+  <tr>
+    <th>Date</th>
+    <th>Montant</th>
+    <th>Catégorie</th>
+    <th>Description</th>
+  </tr>
+<TMPL_LOOP NAME=OPERATIONS>
+  <!-- <TMPL_VAR NAME=date> -->
+  <tr>
+    <td><TMPL_VAR NAME=pdate></td>
+    <td><TMPL_VAR NAME=amount></td>
+    <td><TMPL_VAR NAME=category></td>
+    <td><TMPL_VAR NAME=wording></td>
+  </tr>
+</TMPL_LOOP>
+</table>
+</div>
 
 
 </body>

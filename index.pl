@@ -28,6 +28,20 @@ my $alertStyle = "";
 my $alertRes = "";
 my $alertMsg = "";
 
+# cgi element for getting POST parameters
+my $q = new CGI;
+
+$date = $q->param('dateinput');
+$amount = $q->param('textinput');
+$category = $q->param('selectbasic');
+$wording = $q->param('textinputdesc');
+
+# account number is defined by default to 1
+$account = 1;
+
+# max printed operations
+my $max_operations = 30;
+
 
 # Functions
 ################################################################################
@@ -37,13 +51,6 @@ my $alertMsg = "";
 # Entry point
 ################################################################################
 
-my $q = new CGI;
-
-$date = $q->param('dateinput');
-$amount = $q->param('textinput');
-$account = 1;
-$category = $q->param('selectbasic');
-$wording = $q->param('textinputdesc');
 
 $ref = Budget::getXML($ref, $homebank_file);
 
@@ -52,7 +59,7 @@ if ( defined($date) and defined($amount) and
      defined($category) and defined($wording) )
 {
   ADDOPERATION:{
-    # Add a line in homebank xml file
+    # Add operation in homebank xml file
   
     # convert date to timestamp
     my $ts = Budget::dateToTimestamp($date);
@@ -83,37 +90,49 @@ if ( defined($date) and defined($amount) and
       $alert = 1;
       $alertStyle = "alert-success";
       $alertRes = "Succès !";
-      $alertMsg = "L'opération a bien été sauvée";
+      $alertMsg = "L'opération a bien été enregistrée";
     }
     else
     { # operation failed
       $alert = 1;
       $alertStyle = "alert-danger";
       $alertRes = "Erreur !";
-      $alertMsg = "L'opération a été sauvée";
+      $alertMsg = "L'opération n'a pas été enregistrée correctement";
       print STDERR "Homebank: Error: operation not correctly saved in xml file\n";
       last ADDOPERATION;
     }
   }
 }
 
+# get categories
 %categories = Budget::getCategories($ref);
 my $cat ="";
   
-# Get categories
+# format categories
 foreach my $key ( sort {$a <=> $b} keys %categories ) {
   $cat.="      <option value=\"$key\">$categories{$key}</option>\n";
 }
+
+# get old operations
+my $ope = Budget::getOperations($ref, \%categories);
+
+# reverse sort operations and don't display too old operations
+my @sorted_ope =  sort { $a->{date} <=> $b->{date} } @$ope;
+my @rsorted_ope = reverse @sorted_ope;
+splice @rsorted_ope, $max_operations;
+
   
 # prepare template file
 my $template = HTML::Template->new(filename => $template_file,);
  
 # fill the categories in the template
-$template->param( CATEGORIES => $cat,
+$template->param( OPERATIONS => \@rsorted_ope,
+                  CATEGORIES => $cat,
                   ALERT => $alert,
                   ALERT_STYLE => $alertStyle,
                   ALERT_RES => $alertRes,
                   ALERT_MSG => $alertMsg, );
+
 
 # Write HTML page
 print "Content-Type: text/html\n\n";

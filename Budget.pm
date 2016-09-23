@@ -6,7 +6,7 @@ package Budget;
 use strict;
 use warnings;
 
-use Date::Calc qw(Delta_Days);
+use Date::Calc qw(Delta_Days Time_to_Date);
 use XML::Simple qw(:strict);
 use Encode;
 
@@ -52,6 +52,30 @@ sub getCategories {
   return %cat;
 }
 
+# Get operations from homebank XML structure
+sub getOperations {
+  my $ref = shift;
+  my $cat = shift;
+  my $operations = [];
+
+  my $ope = $ref->{ope};
+
+  foreach my $key ( @$ope ) {
+    my $date = $key->{date};
+    my $amount = $key->{amount};
+    my $category = $cat->{$key->{category}};
+    my $wording = $key->{wording};
+    
+    push @$operations, {date => $date,
+                        pdate => timestampToDate($date),
+                        amount => $amount,
+                        category => $category,
+                        wording => $wording};
+  }
+
+  return $operations;
+}
+
 sub dateToTimestamp {
   my $myDate = shift;
 
@@ -60,6 +84,7 @@ sub dateToTimestamp {
 
   ($day, $month, $year) = split(/\//, $myDate);
 
+  return 0 if !defined $day or !defined $month or !defined $year;
   return 0 unless $day > 0 and $day < 32;
   return 0 unless $month > 0 and $month < 13;
   return 0 unless $year > 1900 and $year < 2100;
@@ -72,6 +97,17 @@ sub dateToTimestamp {
 
 }
 
+sub timestampToDate {
+  my $ts = shift;
+  $ts -= Delta_Days( 1, 1, 1, 1970, 1, 1) + 1;
+  $ts *= 3600 * 24;
+  my ($year, $month, $day);
+
+  ($year, $month, $day) = Time_to_Date($ts);
+
+  return "$day/$month/$year";
+
+}
 
 sub insertOperation {
   my $ref = shift;
