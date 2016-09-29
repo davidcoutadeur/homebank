@@ -2,6 +2,18 @@
 
 web frontend to homebank
 
+Features:
+
+ * add new operations (responsive design interface) to homebank file
+ * display last operations
+ * select operation category from list
+
+Pre-requisites:
+
+ * homebank file
+ * Unix system
+ * Apache + perl
+
 ## Installation
 
 On Apache > 2.4, set this configuration:
@@ -27,3 +39,5 @@ $fileout            --> written homebank file when an operation is saved (genera
 $account            --> account associated to new saved operations
 $max_operations     --> maximum number of displayed operations in the interface
 ```
+
+
